@@ -6,6 +6,7 @@
 USE `sanara_ecommerce`;
 
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `creator_kyc_compliance`;
 DROP TABLE IF EXISTS `user_activity_sessions`;
 DROP TABLE IF EXISTS `agency_members`;
 DROP TABLE IF EXISTS `agency_teams`;
@@ -128,3 +129,24 @@ CREATE TABLE `user_activity_sessions` (
     INDEX `idx_session_expiry` (`expires_at`),
     CONSTRAINT `fk_session_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 7. Creator AML / KYC Financial Compliance & Vetting Registry
+CREATE TABLE `creator_kyc_compliance` (
+    `creator_id` BIGINT UNSIGNED NOT NULL,
+    `tax_id_hash` VARCHAR(128) NOT NULL COMMENT 'SHA-256 hashed tax identification number',
+    `vat_number` VARCHAR(50) NULL,
+    `legal_entity_name` VARCHAR(180) NOT NULL,
+    `residence_country_iso` CHAR(2) NOT NULL,
+    `compliance_status` ENUM('pending_review', 'verified_approved', 'w8_ben_submitted', 'rejected_sanctioned') NOT NULL DEFAULT 'pending_review',
+    `aml_risk_score` TINYINT UNSIGNED NOT NULL DEFAULT 10 COMMENT 'Risk scale 0 to 100, scores above 75 trigger payout holds',
+    `payout_currency_code` CHAR(3) NOT NULL DEFAULT 'USD',
+    `reviewed_by_admin_id` BIGINT UNSIGNED NULL,
+    `verified_at` TIMESTAMP NULL DEFAULT NULL,
+    `last_screened_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`creator_id`),
+    INDEX `idx_kyc_status` (`compliance_status`, `aml_risk_score`),
+    CONSTRAINT `chk_aml_range` CHECK (`aml_risk_score` <= 100),
+    CONSTRAINT `fk_kyc_creator` FOREIGN KEY (`creator_id`) REFERENCES `creator_profiles` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_kyc_admin` FOREIGN KEY (`reviewed_by_admin_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
