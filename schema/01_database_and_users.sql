@@ -40,7 +40,7 @@ CREATE USER 'sanara_migrator'@'%'
 
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, 
       REFERENCES, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, 
-      TRIGGER, EVENT, LOCK TABLES
+      EXECUTE, TRIGGER, EVENT, LOCK TABLES
     ON `sanara_ecommerce`.* TO 'sanara_migrator'@'%';
 
 -- [Account C] Read-Only Analytics, BI & Read-Replica User
