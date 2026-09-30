@@ -37,7 +37,7 @@ else
     exit 1
 fi
 
-# Test 3: Verify Expanded Engineering Entities (Print Profiles, Bundles, Contracts, Collaborators)
+# Test 3: Verify Print Production, Collaborator, and Contract Entities
 echo "[Test 3/7] Verifying Print Profiles, Spot Plates, Bundles, and Contract Entities..."
 ENTITY_CHECK=$(mysql -h "${DB_HOST}" -P "${DB_PORT}" -u sanara_ro -p'SanaraReadOnly_Report2026!' -Nse "
     SELECT 
@@ -49,7 +49,7 @@ ENTITY_CHECK=$(mysql -h "${DB_HOST}" -P "${DB_PORT}" -u sanara_ro -p'SanaraReadO
         (SELECT COUNT(*) FROM \`${DB_NAME}\`.storage_vault_nodes) AS total_records;
 ")
 if [ "${ENTITY_CHECK}" -ge 20 ]; then
-    echo "  Passed: Found ${ENTITY_CHECK} active records across all expanded entities."
+    echo "  Passed: Found ${ENTITY_CHECK} active records across print profiles, bundles, and contract entities."
 else
     echo "  Failed: Expected at least 20 records across new entities, found ${ENTITY_CHECK}" >&2
     exit 1
