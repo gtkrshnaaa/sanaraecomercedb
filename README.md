@@ -231,27 +231,22 @@ sanaraecomercedb/
 |       `-- limits.conf                      System descriptor and process limits (nofile, nproc)
 |-- schema/
 |   |-- 01_database_and_users.sql            Database initialization and remote RBAC accounts
-|   |-- 02_iam_and_creators.sql              Users, creator profiles, agency teams, and sessions
-|   |-- 03_catalog_and_products.sql          Taxonomy, products, JSON metadata, and generated columns
-|   |-- 04_variants_licenses_pricing.sql     Variants, file archives, licenses, and pricing matrix
-|   |-- 05_orders_and_transactions.sql       Orders, line items, coupons, and RANGE partitioning
-|   |-- 06_delivery_and_entitlements.sql     Entitlements, ephemeral download tokens, and telemetry
+|   |-- 02_iam_and_creators.sql              Users, creator profiles, agency teams, sessions, and KYC compliance
+|   |-- 03_catalog_and_products.sql          Taxonomy, products, print specs, spot plates, collaborators, and i18n
+|   |-- 04_variants_licenses_pricing.sql     Variants, pricing, semver revisions, and multi-cloud vault nodes
+|   |-- 05_orders_and_transactions.sql       Orders, line items, coupons, bundles, contracts, and refund disputes
+|   |-- 06_delivery_and_entitlements.sql     Entitlements, ephemeral download tokens, and telemetry logs
 |   |-- 07_wallets_and_payouts.sql           Creator wallets, immutable ledger, and payout requests
 |   |-- 08_reviews_and_auditing.sql          Quality assurance pre-flight, reviews, and audit logs
 |   |-- 09_triggers.sql                      Reactive business logic triggers
 |   |-- 10_stored_procedures_functions.sql   ACID procedures for checkouts, tokens, and payouts
-|   |-- 11_views.sql                         Analytical, catalog search, and reporting views
-|   |-- 12_print_profiles_and_collaborations.sql Industrial print pre-flight, spot plates, and collaborations
-|   |-- 13_bundles_contracts_storage_disputes.sql Bundles, enterprise contracts, multi-cloud vaults, and refunds
-|   `-- 14_asset_versioning_and_localization.sql Semantic asset revisions, i18n translations, KYC and coupons
+|   `-- 11_views.sql                         Analytical, catalog search, and reporting views
 |-- seeds/
-|   |-- 01_seed_iam_creators.sql             Studios, creators, buyers, and agency accounts
+|   |-- 01_seed_iam_creators.sql             Studios, creators, buyers, agency accounts, and KYC compliance
 |   |-- 02_seed_catalog_categories.sql       Ecosystems, licenses, hierarchical taxonomy, and tags
-|   |-- 03_seed_products_assets.sql          Realistic billboards, banners, posters, 3D, and icons
-|   |-- 04_seed_orders_entitlements.sql      Multi-year orders, payments, entitlements, and tokens
-|   |-- 05_seed_wallets_reviews.sql          Ledger entries, payouts, QA checks, reviews, and audits
-|   |-- 06_seed_collaborations_and_bundles.sql Print profiles, spots, creator splits, contracts, and vaults
-|   `-- 07_seed_expanded_catalog_and_revisions.sql Expanded 14-product catalog, semver revisions, i18n, and KYC
+|   |-- 03_seed_products_assets.sql          14-product master catalog, variants, print profiles, spots, and i18n
+|   |-- 04_seed_orders_entitlements.sql      Multi-year orders, bundles, contracts, entitlements, tokens, and refunds
+|   `-- 05_seed_wallets_reviews.sql          Ledger entries, payouts, QA checks, reviews, and storage vault nodes
 |-- queries/
 |   |-- 01_ecommerce_catalog_search.sql      Full-text search, pre-press JSON and DPI filtering
 |   |-- 02_checkout_transaction_simulation.sql ACID checkout transaction demonstration
