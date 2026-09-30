@@ -40,9 +40,6 @@ for schema_file in \
     "${PROJECT_ROOT}/schema/06_delivery_and_entitlements.sql" \
     "${PROJECT_ROOT}/schema/07_wallets_and_payouts.sql" \
     "${PROJECT_ROOT}/schema/08_reviews_and_auditing.sql" \
-    "${PROJECT_ROOT}/schema/12_print_profiles_and_collaborations.sql" \
-    "${PROJECT_ROOT}/schema/13_bundles_contracts_storage_disputes.sql" \
-    "${PROJECT_ROOT}/schema/14_asset_versioning_and_localization.sql" \
     "${PROJECT_ROOT}/schema/09_triggers.sql" \
     "${PROJECT_ROOT}/schema/10_stored_procedures_functions.sql" \
     "${PROJECT_ROOT}/schema/11_views.sql"
@@ -59,9 +56,7 @@ for seed_file in \
     "${PROJECT_ROOT}/seeds/02_seed_catalog_categories.sql" \
     "${PROJECT_ROOT}/seeds/03_seed_products_assets.sql" \
     "${PROJECT_ROOT}/seeds/04_seed_orders_entitlements.sql" \
-    "${PROJECT_ROOT}/seeds/05_seed_wallets_reviews.sql" \
-    "${PROJECT_ROOT}/seeds/06_seed_collaborations_and_bundles.sql" \
-    "${PROJECT_ROOT}/seeds/07_seed_expanded_catalog_and_revisions.sql"
+    "${PROJECT_ROOT}/seeds/05_seed_wallets_reviews.sql"
 do
     filename=$(basename "${seed_file}")
     echo "  Loading ${filename}..."
