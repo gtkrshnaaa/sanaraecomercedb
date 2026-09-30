@@ -6,6 +6,8 @@
 USE `sanara_ecommerce`;
 
 SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `variant_storage_locations`;
+TRUNCATE TABLE `storage_vault_nodes`;
 TRUNCATE TABLE `system_audit_logs`;
 TRUNCATE TABLE `review_helpful_votes`;
 TRUNCATE TABLE `product_reviews`;
@@ -14,7 +16,29 @@ TRUNCATE TABLE `wallet_ledger_entries`;
 TRUNCATE TABLE `payout_requests`;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- 1. Payout Requests
+-- 1. Multi-Cloud Storage Vault Infrastructure Registry
+INSERT INTO `storage_vault_nodes` (
+    `id`, `node_identifier`, `provider`, `region_code`, `endpoint_url`, `bucket_name`,
+    `is_active`, `health_status`, `latency_ms`, `last_heartbeat_at`
+) VALUES
+(1, 's3-primary-us-east', 'aws_s3', 'us-east-1', 'https://s3.us-east-1.amazonaws.com/sanara-vault-primary', 'sanara-vault-primary', 1, 'healthy', 18, '2026-09-30 08:00:00'),
+(2, 'r2-edge-apac-sg', 'cloudflare_r2', 'apac-singapore', 'https://r2.cloudflarestorage.com/sanara-vault-apac', 'sanara-vault-apac', 1, 'healthy', 12, '2026-09-30 08:00:00'),
+(3, 'wasabi-archive-eu-ams', 'wasabi_hot_storage', 'eu-central-1', 'https://s3.eu-central-1.wasabisys.com/sanara-vault-eu', 'sanara-vault-eu', 1, 'healthy', 32, '2026-09-30 08:00:00');
+
+-- 2. Variant Multi-Cloud Object Storage Locations & Replication Sync
+INSERT INTO `variant_storage_locations` (
+    `variant_id`, `node_id`, `storage_path_key`, `replication_status`, `last_verified_at`, `checksum_verified`
+) VALUES
+(1, 1, 'deliverables/prod_1/v1/billboard_14x4_ai.zip', 'synced', '2026-09-29 12:00:00', 1),
+(1, 2, 'deliverables/prod_1/v1/billboard_14x4_ai.zip', 'synced', '2026-09-29 12:05:00', 1),
+(3, 1, 'deliverables/prod_2/v1/spanduk_3x1_ai.zip', 'synced', '2026-09-29 12:00:00', 1),
+(3, 2, 'deliverables/prod_2/v1/spanduk_3x1_ai.zip', 'synced', '2026-09-29 12:05:00', 1),
+(4, 1, 'deliverables/prod_3/v1/swiss_a1_indesign.zip', 'synced', '2026-09-29 12:00:00', 1),
+(4, 3, 'deliverables/prod_3/v1/swiss_a1_indesign.zip', 'synced', '2026-09-29 12:10:00', 1),
+(6, 1, 'deliverables/prod_4/v1/cyber_samurai_blender.zip', 'synced', '2026-09-29 12:00:00', 1),
+(6, 2, 'deliverables/prod_4/v1/cyber_samurai_blender.zip', 'synced', '2026-09-29 12:05:00', 1);
+
+-- 3. Payout Requests
 INSERT INTO `payout_requests` (
     `id`, `uuid`, `creator_id`, `amount`, `currency`, `payout_method`,
     `destination_account_metadata`, `status`, `payout_fee_amount`, `gateway_batch_id`, `processed_at`
@@ -35,7 +59,7 @@ INSERT INTO `payout_requests` (
     'approved', 0.00, NULL, NULL
 );
 
--- 2. Immutable Financial Accounting Ledger Entries
+-- 4. Immutable Financial Accounting Ledger Entries
 INSERT INTO `wallet_ledger_entries` (
     `id`, `wallet_id`, `creator_id`, `entry_type`, `direction`, `amount`,
     `balance_before`, `balance_after`, `order_item_id`, `payout_request_id`, `reference_note`, `created_at`
@@ -55,7 +79,7 @@ INSERT INTO `wallet_ledger_entries` (
 (8, 3, 3, 'sale_royalty', 'credit', 84.15, 3035.85, 3120.00, 4, NULL, 'Swiss Poster Royalty from Dentsu', '2026-02-10 16:45:00'),
 (9, 3, 3, 'sale_royalty', 'credit', 41.65, 3120.00, 3161.65, 7, NULL, 'Cosmetic Box Dieline Royalty from Reza Studio', '2026-03-05 11:32:00');
 
--- 3. Art Director Quality Inspections (Passed Pre-Flight QA)
+-- 5. Art Director Quality Inspections (Passed Pre-Flight QA)
 INSERT INTO `product_quality_reviews` (
     `id`, `product_id`, `inspector_user_id`, `review_status`, `technical_checklist`, `curator_feedback`, `reviewed_at`
 ) VALUES
@@ -106,7 +130,7 @@ INSERT INTO `product_quality_reviews` (
     '2025-02-09 15:00:00'
 );
 
--- 4. Customer Verified Reviews & Star Ratings
+-- 6. Customer Verified Reviews & Star Ratings
 INSERT INTO `product_reviews` (
     `id`, `product_id`, `order_item_id`, `user_id`, `rating`, `headline`,
     `review_body`, `is_verified_purchase`, `helpful_votes_count`, `creator_reply`, `creator_replied_at`
@@ -140,14 +164,14 @@ INSERT INTO `product_reviews` (
     'Arigato gozaimasu! More modular armor attachments coming in v1.2.', '2026-02-14 09:00:00'
 );
 
--- 5. Review Helpful Votes
+-- 7. Review Helpful Votes
 INSERT INTO `review_helpful_votes` (`review_id`, `user_id`, `is_helpful`) VALUES
 (1, 10, 1), (1, 11, 1),
 (2, 9, 1), (2, 11, 1),
 (3, 9, 1),
 (4, 9, 1), (4, 10, 1);
 
--- 6. Central System Security Audit Logs
+-- 8. Central System Security Audit Logs
 INSERT INTO `system_audit_logs` (
     `actor_user_id`, `action`, `entity_type`, `entity_id`, `old_state`, `new_state`, `ip_address`
 ) VALUES
