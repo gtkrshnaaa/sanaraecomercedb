@@ -72,9 +72,9 @@ flowchart TD
 > **[Read the Automated Verification & Benchmark Test Report](docs/automated_verification_and_test_report.md)**
 
 > [!TIP]
-> **SQL & DBMS Engineering Master Handbook Series**: For an exhaustive, 7-volume technical guide covering relational calculus, advanced DML, native MySQL CLI flags, indexing B-trees, transactions/MVCC, stored routines, and replication/PITR:
+> **SQL & DBMS Engineering Master Handbook Series**: For an exhaustive, 8-volume technical guide covering relational calculus, advanced DML, native MySQL CLI flags, indexing B-trees, transactions/MVCC, stored routines, replication/PITR, and the complete SQL keyword encyclopedia:
 > 
-> **[Explore the Complete 7-Volume SQLBooks Curriculum](docs/sqlbooks/README.md)**
+> **[Explore the Complete 8-Volume SQLBooks Curriculum](docs/sqlbooks/README.md)**
 
 ### Integration Quick Reference:
 1. **Network Authorization**: MySQL binds to `0.0.0.0` or `10.0.2.10` with `skip-name-resolve = 1`. Linux UFW permits inbound TCP port 3306 strictly from the application subnet `10.0.1.0/24`.
@@ -271,7 +271,7 @@ sanaraecomercedb/
 |   |-- rotate_partitions.sh                 Annual partition maintenance automation
 |   `-- run_benchmarks.sh                    Query benchmark and performance profiler
 `-- docs/
-    |-- sqlbooks/                            7-Volume Comprehensive SQL & DBMS Engineering Handbook
+    |-- sqlbooks/                            8-Volume Comprehensive SQL & DBMS Engineering Handbook
     |   |-- README.md                        Curriculum syllabus and pedagogical structure
     |   |-- 01_foundations_relational_calculus.md Relational calculus, normal forms (1NF-BCNF), types
     |   |-- 02_advanced_dml_and_query_mastery.md Execution order, window functions, recursive CTEs
@@ -279,7 +279,8 @@ sanaraecomercedb/
     |   |-- 04_indexing_execution_plans_and_optimization.md InnoDB 16KB pages, B+Tree, EXPLAIN ANALYZE
     |   |-- 05_transactions_concurrency_and_locking.md ACID, WAL redo logs, MVCC undo chains, deadlocks
     |   |-- 06_programmable_sql_routines_and_triggers.md Procedures, functions, triggers, error handlers
-    |   `-- 07_administration_replication_and_disaster_recovery.md Partitioning, RBAC, GTID, PITR
+    |   |-- 07_administration_replication_and_disaster_recovery.md Partitioning, RBAC, GTID, PITR
+    |   `-- 08_sql_keyword_and_reserved_word_encyclopedia.md Complete SQL keyword and reserved word encyclopedia
     |-- automated_verification_and_test_report.md Complete test execution transcript and live benchmark metrics
     |-- cli_database_management_mastery_guide.md Comprehensive MySQL client CLI administration master runbook
     |-- remote_application_connection_guide.md Standalone DB to PHP integration runbook (Laravel, PDO, TLS)
@@ -374,7 +375,7 @@ For the exhaustive automated test transcript, invariant financial audits, and pa
 
 ## 8. SQL & Database Engineering Mastery Handbook (SQLBooks)
 
-Located in [`docs/sqlbooks/`](docs/sqlbooks/README.md), this 7-volume engineering handbook provides a rigorous, production-grade guide to relational theory, modern SQL, MySQL client terminal operations, InnoDB storage engine internals, and high-availability operations:
+Located in [`docs/sqlbooks/`](docs/sqlbooks/README.md), this 8-volume engineering handbook provides a rigorous, production-grade guide to relational theory, modern SQL, MySQL client terminal operations, InnoDB storage engine internals, high-availability operations, and comprehensive keyword taxonomy:
 
 | Volume | Title | Core Engineering Coverage |
 | :--- | :--- | :--- |
@@ -385,3 +386,4 @@ Located in [`docs/sqlbooks/`](docs/sqlbooks/README.md), this 7-volume engineerin
 | **[Volume 5](docs/sqlbooks/05_transactions_concurrency_and_locking.md)** | Transactions, Concurrency Control, and InnoDB Locking Engine | ACID architecture, WAL redo logs, MVCC rollback segments, ANSI isolation levels, row/gap/next-key locks, deadlocks and engine status diagnosis. |
 | **[Volume 6](docs/sqlbooks/06_programmable_sql_routines_and_triggers.md)** | Programmable SQL Routines, Triggers, and Error Handling | Delimiter reassignment, stored procedures vs functions, determinism, cursor lifecycle, `SIGNAL SQLSTATE`, `DECLARE HANDLER`, reactive triggers, definer security. |
 | **[Volume 7](docs/sqlbooks/07_administration_replication_and_disaster_recovery.md)** | Administration, Replication, and Disaster Recovery | Horizontal range/list partitioning, partition pruning, `OPTIMIZE`/`ANALYZE TABLE`, RBAC roles, dual passwords, GTID replication, and Point-In-Time Recovery. |
+| **[Volume 8](docs/sqlbooks/08_sql_keyword_and_reserved_word_encyclopedia.md)** | Comprehensive SQL Keyword, Operator, and Reserved Word Encyclopedia | Complete syntactic taxonomy of all ANSI SQL & MySQL 8.0 keywords, DQL/DML/DDL/TCL/DCL semantics, locking clauses, JSON_TABLE, and exhaustive A-Z matrix. |
