@@ -60,7 +60,7 @@ Target Host: 127.0.0.1:3307 | Database: sanara_ecommerce
   - download_logs : p2024, p2025, p2026, p2027, p_future (5 partitions)
 
 [Test 3/7] Verifying Print Profiles, Spot Plates, Bundles, and Contract Entities...
-  Passed: Found 24 active records across all expanded entities.
+  Passed: Found 24 active records across print profiles, bundles, and contract entities.
   - print_production_profiles : 5 industrial substrate profiles (FOGRA39, GRACoL, Vinyl 510gsm)
   - spot_color_plates         : 6 Pantone spot color, foil stamping & die-cut crease plates
   - product_collaborators     : 6 multi-party creative splits (Lead, 3D, Typographer, Die-line)
