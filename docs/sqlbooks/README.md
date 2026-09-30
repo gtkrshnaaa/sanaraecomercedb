@@ -20,6 +20,7 @@ All examples, queries, and system commands are verified against production MySQL
 | [Volume 5](file:///home/user/space/project/dbengineering/sanaraecomercedb/docs/sqlbooks/05_transactions_concurrency_and_locking.md) | Transactions, Concurrency & Locking | ACID compliance, isolation levels (RU, RC, RR, Serial), MVCC undo logs, InnoDB lock types (Record, Gap, Next-Key), and deadlock graphs. |
 | [Volume 6](file:///home/user/space/project/dbengineering/sanaraecomercedb/docs/sqlbooks/06_programmable_sql_routines_and_triggers.md) | Programmable SQL Routines & Triggers | Stored procedures, user-defined functions, reactive triggers, cursors, error signaling (`SIGNAL SQLSTATE`), handlers, and definer security. |
 | [Volume 7](file:///home/user/space/project/dbengineering/sanaraecomercedb/docs/sqlbooks/07_administration_replication_and_disaster_recovery.md) | Administration, Partitioning & Disaster Recovery | RANGE partitioning, table optimization, RBAC permission matrices, dual-password rotation, GTID binary replication, and Point-In-Time Recovery. |
+| [Volume 8](file:///home/user/space/project/dbengineering/sanaraecomercedb/docs/sqlbooks/08_sql_keyword_and_reserved_word_encyclopedia.md) | SQL Keyword & Reserved Word Encyclopedia | Complete syntactic taxonomy of all ANSI SQL & MySQL 8.0 keywords, DQL/DML/DDL/TCL/DCL semantics, locking clauses, JSON_TABLE, and exhaustive A-Z matrix. |
 
 ---
 
