@@ -11,6 +11,9 @@ CREATE DATABASE IF NOT EXISTS `sanara_ecommerce`
 
 USE `sanara_ecommerce`;
 
+-- Enable trusted function and trigger creation in replication/binlog environments
+SET GLOBAL log_bin_trust_function_creators = 1;
+
 -- 2. Clean up existing users for idempotent re-runs
 DROP USER IF EXISTS 'sanara_app'@'%';
 DROP USER IF EXISTS 'sanara_migrator'@'%';
