@@ -61,6 +61,11 @@ flowchart TD
 > 
 > **[Read the Standalone Remote Connection & Integration Guide](docs/remote_application_connection_guide.md)**
 
+> [!TIP]
+> **Terminal CLI Operations & Database Engineering Mastery**: To administer, profile query execution plans, manage range partitions, audit TLS connections, and debug locks directly from the terminal using the native MySQL CLI client, review our dedicated operational master runbook:
+> 
+> **[Read the MySQL Client CLI Database Management Mastery Guide](docs/cli_database_management_mastery_guide.md)**
+
 ### Integration Quick Reference:
 1. **Network Authorization**: MySQL binds to `0.0.0.0` or `10.0.2.10` with `skip-name-resolve = 1`. Linux UFW permits inbound TCP port 3306 strictly from the application subnet `10.0.1.0/24`.
 2. **TLS 1.3 Handshake**: Encrypted transport is enforced. The database Root CA (`/etc/mysql/ssl/ca.pem`) is distributed to application servers at `/etc/ssl/certs/sanara/sanara-db-ca.pem`.
@@ -120,6 +125,17 @@ For detailed PDO factories, Symfony Doctrine configurations, and connection pool
 - **Linux Kernel Sysctl**: Low swappiness (`vm.swappiness = 1`), elevated socket backlogs (`net.core.somaxconn = 65535`), and extended descriptor limits (`fs.file-max = 2097152`).
 - **InnoDB Engine Tuning**: 4GB buffer pool split across 4 instances, 2GB redo log capacity, `O_DIRECT` flushing, and strict ACID compliance (`innodb_flush_log_at_trx_commit = 1`).
 
+### F. Industrial Pre-Press & Multi-Party Collaboration Engineering
+- **Physical Print Production Profiles**: Standardizes substrate specifications (`vinyl_frontlit_510gsm`, `art_carton_310gsm`), Total Area Coverage (TAC) ink limits, and ISO 12647-2 FOGRA39 / GRACoL 2013 profile tags.
+- **Spot Color Separation Channels**: Models independent ink plates for Pantone Matching System (PMS) inks, metallic foil dies, selective UV varnishes, and structural CAD cutlines with CMYK fallbacks.
+- **Multi-Party Creator Royalty Splits**: Allows master collaborative assets (e.g. 3D character rigs, packaging suites) to distribute royalties across lead studios, 3D modelers, typographers, and pre-press colorists.
+
+### G. Enterprise B2B Contracts, Campaign Bundling & Multi-Cloud Storage
+- **Master Service Agreements (MSA)**: Supports enterprise B2B agency contracts (Ogilvy, Dentsu) with multi-seat licensing, annual minimum guarantees, custom discounts, and category download quotas.
+- **Curated Campaign Design Bundles**: Many-to-many product bundling with package discount rates, hero asset flags, and cross-discipline kits.
+- **Multi-Cloud Vault Registry**: Tracks file assets across AWS S3, Cloudflare R2 edge nodes, and Wasabi cold archives with real-time replication status and SHA-256 verification.
+- **Dispute & Refund Arbitration**: Granular line-item refund dispute workflows integrated with double-entry accounting chargeback reversals.
+
 ---
 
 ## 4. Entity-Relationship Diagram (ERD)
@@ -133,15 +149,19 @@ erDiagram
     users ||--o{ orders : "places"
     users ||--o{ customer_entitlements : "holds"
     users ||--o{ product_reviews : "authors"
+    users ||--o{ order_refund_requests : "files"
 
     creator_profiles ||--o{ creator_social_links : "publishes"
     creator_profiles ||--o{ products : "authors"
     creator_profiles ||--o| creator_wallets : "possesses"
     creator_profiles ||--o{ payout_requests : "submits"
+    creator_profiles ||--o{ product_collaborators : "contributes"
+    creator_profiles ||--o{ collections : "curates"
     creator_wallets ||--o{ wallet_ledger_entries : "records"
 
     categories ||--o{ categories : "sub_categorizes"
     categories ||--o{ products : "classifies"
+    categories ||--o{ contract_asset_allocations : "cleared_in"
     software_ecosystems ||--o{ product_variants : "supports"
 
     products ||--o{ product_variants : "delivers"
@@ -151,6 +171,16 @@ erDiagram
     tags ||--o{ product_tag_relations : "categorizes"
     products ||--o{ product_quality_reviews : "inspected_by"
     products ||--o{ product_reviews : "receives"
+    products ||--o{ product_print_profiles : "specifies"
+    products ||--o{ spot_color_plates : "separates"
+    products ||--o{ product_collaborators : "split_among"
+    products ||--o{ collection_items : "featured_in"
+
+    print_production_profiles ||--o{ product_print_profiles : "standardizes"
+    collections ||--o{ collection_items : "bundles"
+
+    agency_teams ||--o{ enterprise_contracts : "negotiates"
+    enterprise_contracts ||--o{ contract_asset_allocations : "allocates"
 
     licenses ||--o{ product_pricing_matrix : "scales"
     licenses ||--o{ order_items : "governs"
@@ -161,9 +191,13 @@ erDiagram
     orders ||--o{ payment_transactions : "audits"
 
     order_items ||--|| customer_entitlements : "grants"
+    order_items ||--o{ order_refund_requests : "disputed_in"
     customer_entitlements ||--o{ secure_download_tokens : "authorizes"
     customer_entitlements ||--o{ download_logs : "tracks"
     secure_download_tokens ||--o{ download_logs : "consumes"
+
+    product_variants ||--o{ variant_storage_locations : "replicated_across"
+    storage_vault_nodes ||--o{ variant_storage_locations : "hosts"
 
     product_reviews ||--o{ review_helpful_votes : "upvoted_by"
 ```
@@ -194,20 +228,25 @@ sanaraecomercedb/
 |   |-- 08_reviews_and_auditing.sql          Quality assurance pre-flight, reviews, and audit logs
 |   |-- 09_triggers.sql                      Reactive business logic triggers
 |   |-- 10_stored_procedures_functions.sql   ACID procedures for checkouts, tokens, and payouts
-|   `-- 11_views.sql                         Analytical, catalog search, and reporting views
+|   |-- 11_views.sql                         Analytical, catalog search, and reporting views
+|   |-- 12_print_profiles_and_collaborations.sql Industrial print pre-flight, spot plates, and collaborations
+|   `-- 13_bundles_contracts_storage_disputes.sql Bundles, enterprise contracts, multi-cloud vaults, and refunds
 |-- seeds/
 |   |-- 01_seed_iam_creators.sql             Studios, creators, buyers, and agency accounts
 |   |-- 02_seed_catalog_categories.sql       Ecosystems, licenses, hierarchical taxonomy, and tags
 |   |-- 03_seed_products_assets.sql          Realistic billboards, banners, posters, 3D, and icons
 |   |-- 04_seed_orders_entitlements.sql      Multi-year orders, payments, entitlements, and tokens
-|   `-- 05_seed_wallets_reviews.sql          Ledger entries, payouts, QA checks, reviews, and audits
+|   |-- 05_seed_wallets_reviews.sql          Ledger entries, payouts, QA checks, reviews, and audits
+|   `-- 06_seed_collaborations_and_bundles.sql Print profiles, spots, creator splits, contracts, and vaults
 |-- queries/
 |   |-- 01_ecommerce_catalog_search.sql      Full-text search, pre-press JSON and DPI filtering
 |   |-- 02_checkout_transaction_simulation.sql ACID checkout transaction demonstration
 |   |-- 03_secure_download_and_entitlement.sql Ephemeral token lifecycle and telemetry ingestion
 |   |-- 04_creator_royalty_payouts.sql       Pessimistic row locking and ledger balance deductions
 |   |-- 05_analytics_and_reporting.sql       Hierarchical revenue breakdown and market share
-|   `-- 06_explain_analyze_benchmarks.sql    EXPLAIN ANALYZE partition pruning and index proofs
+|   |-- 06_explain_analyze_benchmarks.sql    EXPLAIN ANALYZE partition pruning and index proofs
+|   |-- 07_print_specs_and_collaborative_royalties.sql Pre-press proofing and multi-creator split calculations
+|   `-- 08_enterprise_contracts_and_bundles.sql Campaign bundles, B2B contract SLAs, and storage replication
 |-- scripts/
 |   |-- install_mysql_ubuntu.sh              Automated Ubuntu installation and system tuning
 |   |-- configure_server.sh                  Firewall (UFW), remote network bind, and SSL generator
@@ -218,6 +257,7 @@ sanaraecomercedb/
 |   |-- rotate_partitions.sh                 Annual partition maintenance automation
 |   `-- run_benchmarks.sh                    Query benchmark and performance profiler
 `-- docs/
+    |-- cli_database_management_mastery_guide.md Comprehensive MySQL client CLI administration master runbook
     |-- remote_application_connection_guide.md Standalone DB to PHP integration runbook (Laravel, PDO, TLS)
     |-- architecture_topology.md             Network segmentation and dedicated host topology
     |-- database_schema_erd.md               Complete schema data dictionary and entity catalog
