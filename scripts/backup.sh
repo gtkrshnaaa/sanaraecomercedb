@@ -8,6 +8,10 @@ set -euo pipefail
 
 BACKUP_DIR="${1:-/var/backups/sanara_mysql}"
 DB_NAME="sanara_ecommerce"
+DB_HOST="${DB_HOST:-127.0.0.1}"
+DB_PORT="${DB_PORT:-3306}"
+BACKUP_USER="${BACKUP_USER:-sanara_backup}"
+BACKUP_PASS="${BACKUP_PASS:-SanaraBackup_LocalSecret2026!}"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 BACKUP_FILE="${BACKUP_DIR}/${DB_NAME}_backup_${TIMESTAMP}.sql.gz"
 CHECKSUM_FILE="${BACKUP_FILE}.sha256"
@@ -15,10 +19,14 @@ CHECKSUM_FILE="${BACKUP_FILE}.sha256"
 mkdir -p "${BACKUP_DIR}"
 
 echo "Starting automated backup for database: ${DB_NAME}..."
-echo "Target backup destination: ${BACKUP_FILE}"
+echo "Host: ${DB_HOST}:${DB_PORT} | Target destination: ${BACKUP_FILE}"
 
 # Execute production mysqldump with strict transaction isolation and consistent binlog coords
 mysqldump \
+    -h "${DB_HOST}" \
+    -P "${DB_PORT}" \
+    -u "${BACKUP_USER}" \
+    -p"${BACKUP_PASS}" \
     --single-transaction \
     --quick \
     --routines \

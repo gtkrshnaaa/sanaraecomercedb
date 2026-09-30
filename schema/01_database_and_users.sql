@@ -51,13 +51,20 @@ CREATE USER 'sanara_ro'@'%'
 GRANT SELECT, SHOW VIEW, EXECUTE 
     ON `sanara_ecommerce`.* TO 'sanara_ro'@'%';
 
--- [Account D] Automated Backup Daemon (Localhost Only)
+-- [Account D] Automated Backup Daemon
 CREATE USER 'sanara_backup'@'localhost' 
     IDENTIFIED WITH caching_sha2_password BY 'SanaraBackup_LocalSecret2026!'
-    WITH MAX_USER_CONNECTIONS 5;
+    WITH MAX_USER_CONNECTIONS 10;
+
+CREATE USER 'sanara_backup'@'%' 
+    IDENTIFIED WITH caching_sha2_password BY 'SanaraBackup_LocalSecret2026!'
+    WITH MAX_USER_CONNECTIONS 10;
 
 GRANT SELECT, LOCK TABLES, SHOW VIEW, PROCESS, RELOAD, REPLICATION CLIENT, EVENT, TRIGGER
     ON *.* TO 'sanara_backup'@'localhost';
+
+GRANT SELECT, LOCK TABLES, SHOW VIEW, PROCESS, RELOAD, REPLICATION CLIENT, EVENT, TRIGGER
+    ON *.* TO 'sanara_backup'@'%';
 
 -- [Account E] Binary Log GTID Replication User (for Read Replicas)
 CREATE USER 'sanara_replicator'@'%' 
