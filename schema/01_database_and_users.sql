@@ -48,7 +48,7 @@ CREATE USER 'sanara_ro'@'%'
     IDENTIFIED WITH caching_sha2_password BY 'SanaraReadOnly_Report2026!'
     WITH MAX_USER_CONNECTIONS 50;
 
-GRANT SELECT, SHOW VIEW 
+GRANT SELECT, SHOW VIEW, EXECUTE 
     ON `sanara_ecommerce`.* TO 'sanara_ro'@'%';
 
 -- [Account D] Automated Backup Daemon (Localhost Only)
