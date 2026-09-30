@@ -66,6 +66,11 @@ flowchart TD
 > 
 > **[Read the MySQL Client CLI Database Management Mastery Guide](docs/cli_database_management_mastery_guide.md)**
 
+> [!NOTE]
+> **Concrete Verification & Test Audit Report**: Review the complete execution transcript, real-time EXPLAIN ANALYZE iterator timings, and financial ledger invariant audits on a live MySQL 8.0 instance:
+> 
+> **[Read the Automated Verification & Benchmark Test Report](docs/automated_verification_and_test_report.md)**
+
 ### Integration Quick Reference:
 1. **Network Authorization**: MySQL binds to `0.0.0.0` or `10.0.2.10` with `skip-name-resolve = 1`. Linux UFW permits inbound TCP port 3306 strictly from the application subnet `10.0.1.0/24`.
 2. **TLS 1.3 Handshake**: Encrypted transport is enforced. The database Root CA (`/etc/mysql/ssl/ca.pem`) is distributed to application servers at `/etc/ssl/certs/sanara/sanara-db-ca.pem`.
@@ -199,6 +204,13 @@ erDiagram
     product_variants ||--o{ variant_storage_locations : "replicated_across"
     storage_vault_nodes ||--o{ variant_storage_locations : "hosts"
 
+    products ||--o{ product_asset_revisions : "versioned_by"
+    product_variants ||--o{ product_asset_revisions : "releases"
+    products ||--o{ product_translations_i18n : "translated_into"
+    creator_profiles ||--|| creator_kyc_compliance : "submits"
+    coupons ||--o{ coupon_redemption_history : "audited_by"
+    users ||--o{ coupon_redemption_history : "redeems"
+
     product_reviews ||--o{ review_helpful_votes : "upvoted_by"
 ```
 
@@ -230,14 +242,16 @@ sanaraecomercedb/
 |   |-- 10_stored_procedures_functions.sql   ACID procedures for checkouts, tokens, and payouts
 |   |-- 11_views.sql                         Analytical, catalog search, and reporting views
 |   |-- 12_print_profiles_and_collaborations.sql Industrial print pre-flight, spot plates, and collaborations
-|   `-- 13_bundles_contracts_storage_disputes.sql Bundles, enterprise contracts, multi-cloud vaults, and refunds
+|   |-- 13_bundles_contracts_storage_disputes.sql Bundles, enterprise contracts, multi-cloud vaults, and refunds
+|   `-- 14_asset_versioning_and_localization.sql Semantic asset revisions, i18n translations, KYC and coupons
 |-- seeds/
 |   |-- 01_seed_iam_creators.sql             Studios, creators, buyers, and agency accounts
 |   |-- 02_seed_catalog_categories.sql       Ecosystems, licenses, hierarchical taxonomy, and tags
 |   |-- 03_seed_products_assets.sql          Realistic billboards, banners, posters, 3D, and icons
 |   |-- 04_seed_orders_entitlements.sql      Multi-year orders, payments, entitlements, and tokens
 |   |-- 05_seed_wallets_reviews.sql          Ledger entries, payouts, QA checks, reviews, and audits
-|   `-- 06_seed_collaborations_and_bundles.sql Print profiles, spots, creator splits, contracts, and vaults
+|   |-- 06_seed_collaborations_and_bundles.sql Print profiles, spots, creator splits, contracts, and vaults
+|   `-- 07_seed_expanded_catalog_and_revisions.sql Expanded 14-product catalog, semver revisions, i18n, and KYC
 |-- queries/
 |   |-- 01_ecommerce_catalog_search.sql      Full-text search, pre-press JSON and DPI filtering
 |   |-- 02_checkout_transaction_simulation.sql ACID checkout transaction demonstration
@@ -257,6 +271,7 @@ sanaraecomercedb/
 |   |-- rotate_partitions.sh                 Annual partition maintenance automation
 |   `-- run_benchmarks.sh                    Query benchmark and performance profiler
 `-- docs/
+    |-- automated_verification_and_test_report.md Complete test execution transcript and live benchmark metrics
     |-- cli_database_management_mastery_guide.md Comprehensive MySQL client CLI administration master runbook
     |-- remote_application_connection_guide.md Standalone DB to PHP integration runbook (Laravel, PDO, TLS)
     |-- architecture_topology.md             Network segmentation and dedicated host topology
@@ -328,16 +343,20 @@ EXPLAIN SELECT id, order_number, total_amount FROM orders WHERE created_at >= '2
 EXPLAIN ANALYZE SELECT id, title, color_mode, resolution_dpi FROM products WHERE color_mode = 'CMYK' AND resolution_dpi = 300;
 ```
 ```text
--> Filter: (products.color_mode = 'CMYK') (cost=0.8 rows=3) (actual time=0.0465..0.0517 rows=3 loops=1)
-    -> Index lookup on products using idx_prod_gen_dpi (resolution_dpi=300) (cost=0.8 rows=3) (actual time=0.0438..0.0482 rows=3 loops=1)
+-> Filter: (products.color_mode = 'CMYK')  (cost=0.857 rows=3.57) (actual time=0.0295..0.0367 rows=5 loops=1)
+    -> Index lookup on products using idx_prod_gen_dpi (resolution_dpi=300)  (cost=0.857 rows=5) (actual time=0.0275..0.0342 rows=5 loops=1)
 ```
-Indexed B-tree lookup resolves in **0.043 milliseconds**, bypassing slow JSON deserialization.
+Indexed B-tree lookup resolves in **0.0275 milliseconds**, bypassing slow JSON deserialization.
 
 ### C. Full-Text Search Plan
 ```sql
 EXPLAIN ANALYZE SELECT id, title FROM products WHERE MATCH(title, subtitle, search_keywords) AGAINST('billboard outdoor');
 ```
 ```text
--> Full-text index search on products using idx_fts_products (title='billboard outdoor') (cost=0.35 rows=1) (actual time=0.041..0.0474 rows=2 loops=1)
+-> Filter: (match products.title,products.subtitle,products.search_keywords against ('billboard outdoor'))  (cost=0.35 rows=1) (actual time=0.0231..0.0351 rows=5 loops=1)
+    -> Full-text index search on products using idx_fts_products (title='billboard outdoor')  (cost=0.35 rows=1) (actual time=0.022..0.0337 rows=5 loops=1)
 ```
-Natural language search resolves in **0.041 milliseconds**.
+Natural language search resolves in **0.0220 milliseconds**.
+
+For the exhaustive automated test transcript, invariant financial audits, and partition distribution proofs, see:
+**[Read the Automated Verification & Benchmark Test Report](docs/automated_verification_and_test_report.md)**
