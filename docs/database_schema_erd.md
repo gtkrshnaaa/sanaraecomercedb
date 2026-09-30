@@ -61,6 +61,13 @@ erDiagram
     product_variants ||--o{ variant_storage_locations : "replicated_across"
     storage_vault_nodes ||--o{ variant_storage_locations : "hosts"
 
+    products ||--o{ product_asset_revisions : "versioned_by"
+    product_variants ||--o{ product_asset_revisions : "releases"
+    products ||--o{ product_translations_i18n : "translated_into"
+    creator_profiles ||--|| creator_kyc_compliance : "submits"
+    coupons ||--o{ coupon_redemption_history : "audited_by"
+    users ||--o{ coupon_redemption_history : "redeems"
+
     product_reviews ||--o{ review_helpful_votes : "upvoted_by"
 ```
 
@@ -203,3 +210,19 @@ Multi-cloud replication registry tracking asset files across AWS S3 primary stor
 
 #### `order_refund_requests`
 Granular line-item dispute and refund arbitration workflows integrated with double-entry accounting chargeback reversals.
+
+---
+
+### Domain 9: Semantic Asset Revisions, Localization i18n, AML/KYC & Coupon Redemptions
+
+#### `product_asset_revisions`
+Tracks immutable deliverable updates per variant with semver strings (`semver_major.semver_minor.semver_patch`), release changelogs in markdown, SHA-256 archive hashes, and breaking change flags.
+
+#### `product_translations_i18n`
+Internationalized titles, subtitles, and detailed marketing descriptions across target locales (`id_ID`, `ja_JP`, `de_DE`, `en_US`) with dedicated composite full-text indexes.
+
+#### `creator_kyc_compliance`
+Anti-Money Laundering (AML) and financial KYC compliance registry verifying studio legal entity identities, SHA-256 tax identification hashes, VAT numbers, and automated risk scoring.
+
+#### `coupon_redemption_history`
+Captures exact coupon redemption timestamps, claimed monetary discounts, and user references to prevent coupon fraud and enforce promotional campaign limits.
