@@ -6,6 +6,7 @@
 USE `sanara_ecommerce`;
 
 SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `creator_kyc_compliance`;
 TRUNCATE TABLE `agency_members`;
 TRUNCATE TABLE `agency_teams`;
 TRUNCATE TABLE `creator_social_links`;
@@ -69,3 +70,16 @@ INSERT INTO `agency_teams` (`id`, `owner_user_id`, `team_name`, `slug`, `billing
 INSERT INTO `agency_members` (`team_id`, `user_id`, `team_role`, `joined_at`) VALUES
 (1, 10, 'owner', '2025-01-05 08:00:00'),
 (2, 11, 'owner', '2025-01-08 09:30:00');
+
+-- 7. Creator AML / KYC Financial Compliance & Vetting Records
+INSERT INTO `creator_kyc_compliance` (
+    `creator_id`, `tax_id_hash`, `vat_number`, `legal_entity_name`,
+    `residence_country_iso`, `compliance_status`, `aml_risk_score`,
+    `payout_currency_code`, `reviewed_by_admin_id`, `verified_at`
+) VALUES
+(1, 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'ID00982189421', 'PT Nusantara Desain Visual', 'ID', 'verified_approved', 5, 'USD', 1, '2025-01-10 10:00:00'),
+(2, 'ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb', 'JP81290312901', 'Kyoto Digital Arts GK', 'JP', 'verified_approved', 8, 'USD', 1, '2025-01-15 11:30:00'),
+(3, '4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce', 'DE319028401', 'Bauhaus Raster Medien GmbH', 'DE', 'verified_approved', 4, 'USD', 1, '2025-02-01 09:00:00'),
+(4, '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08', 'GB921048120', 'Apex Visual Motion Ltd', 'GB', 'verified_approved', 12, 'USD', 1, '2025-02-12 14:00:00'),
+(5, '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', NULL, 'PixelForge Asset Foundry LLC', 'US', 'w8_ben_submitted', 15, 'USD', 1, '2025-02-20 16:00:00');
+
