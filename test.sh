@@ -33,18 +33,36 @@ else
     exit 1
 fi
 
-# Test 3: Stored Procedures & Triggers Simulation
-echo "[Test 3/5] Verifying Stored Procedures and Reactive Triggers..."
+# Test 3: Verify Expanded Engineering Entities (Print Profiles, Bundles, Contracts, Collaborators)
+echo "[Test 3/6] Verifying Print Profiles, Spot Plates, Bundles, and Contract Entities..."
+ENTITY_CHECK=$(mysql -u sanara_ro -p'SanaraReadOnly_Report2026!' -Nse "
+    SELECT 
+        (SELECT COUNT(*) FROM \`${DB_NAME}\`.print_production_profiles) +
+        (SELECT COUNT(*) FROM \`${DB_NAME}\`.spot_color_plates) +
+        (SELECT COUNT(*) FROM \`${DB_NAME}\`.product_collaborators) +
+        (SELECT COUNT(*) FROM \`${DB_NAME}\`.collections) +
+        (SELECT COUNT(*) FROM \`${DB_NAME}\`.enterprise_contracts) +
+        (SELECT COUNT(*) FROM \`${DB_NAME}\`.storage_vault_nodes) AS total_records;
+")
+if [ "${ENTITY_CHECK}" -ge 20 ]; then
+    echo "  Passed: Found ${ENTITY_CHECK} active records across all expanded entities."
+else
+    echo "  Failed: Expected at least 20 records across new entities, found ${ENTITY_CHECK}" >&2
+    exit 1
+fi
+
+# Test 4: Stored Procedures & Triggers Simulation
+echo "[Test 4/6] Verifying Stored Procedures and Reactive Triggers..."
 mysql -u sanara_app -p'SanaraApp_SecurePass2026!' "${DB_NAME}" < "${SCRIPT_DIR}/queries/02_checkout_transaction_simulation.sql" > /dev/null
 echo "  Passed: Atomic checkout transaction and triggers executed without errors."
 
-# Test 4: Query Benchmarks & EXPLAIN ANALYZE
-echo "[Test 4/5] Executing Performance Benchmarks & EXPLAIN ANALYZE..."
+# Test 5: Query Benchmarks & EXPLAIN ANALYZE
+echo "[Test 5/6] Executing Performance Benchmarks & EXPLAIN ANALYZE..."
 bash "${SCRIPT_DIR}/scripts/run_benchmarks.sh" > /dev/null
 echo "  Passed: Query plans, full-text indexes, and generated columns verified."
 
-# Test 5: Backup and Recovery Validation
-echo "[Test 5/5] Validating Backup and Checksum Generation..."
+# Test 6: Backup and Recovery Validation
+echo "[Test 6/6] Validating Backup and Checksum Generation..."
 TMP_BACKUP_DIR=$(mktemp -d)
 bash "${SCRIPT_DIR}/scripts/backup.sh" "${TMP_BACKUP_DIR}" > /dev/null
 LATEST_BACKUP=$(ls -t "${TMP_BACKUP_DIR}"/*.sql.gz | head -1)
