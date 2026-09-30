@@ -54,7 +54,43 @@ flowchart TD
 
 ---
 
-## 2. Core Engineering Highlights
+## 2. Crucial: Remote Application Integration (Standalone DB Server to PHP Application Tier)
+
+> [!IMPORTANT]
+> **Dedicated Remote Database Host**: The Sanara MySQL 8.0 server is architected as an autonomous storage node (`10.0.2.10`) physically isolated from the PHP application cluster (`10.0.1.0/24`). For complete integration blueprints, certificate distribution guides, and connection pool sizing, review the dedicated runbook:
+> 
+> **[Read the Standalone Remote Connection & Integration Guide](docs/remote_application_connection_guide.md)**
+
+### Integration Quick Reference:
+1. **Network Authorization**: MySQL binds to `0.0.0.0` or `10.0.2.10` with `skip-name-resolve = 1`. Linux UFW permits inbound TCP port 3306 strictly from the application subnet `10.0.1.0/24`.
+2. **TLS 1.3 Handshake**: Encrypted transport is enforced. The database Root CA (`/etc/mysql/ssl/ca.pem`) is distributed to application servers at `/etc/ssl/certs/sanara/sanara-db-ca.pem`.
+3. **Least Privilege Accounts**:
+   - `sanara_app`@`10.0.1.%`: Production web app queries (DML only: `SELECT, INSERT, UPDATE, DELETE, EXECUTE`).
+   - `sanara_migrator`@`10.0.1.%`: CI/CD deployment pipelines running database migrations (DDL + DML).
+   - `sanara_ro`@`10.0.1.%`: Analytics, reporting, and read-replica read queries.
+4. **Laravel Integration Blueprint (`config/database.php`)**:
+   ```php
+   'mysql' => [
+       'driver' => 'mysql',
+       'read'   => ['host' => [env('DB_READ_HOST', '10.0.2.11')]], // Read Replica
+       'write'  => ['host' => [env('DB_HOST', '10.0.2.10')]],      // Master Node
+       'port'   => env('DB_PORT', 3306),
+       'database' => env('DB_DATABASE', 'sanara_ecommerce'),
+       'username' => env('DB_USERNAME', 'sanara_app'),
+       'password' => env('DB_PASSWORD', 'SanaraApp_SecurePass2026!'),
+       'options'  => [
+           PDO::MYSQL_ATTR_SSL_CA => '/etc/ssl/certs/sanara/sanara-db-ca.pem',
+           PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+           PDO::ATTR_TIMEOUT => 5,
+       ],
+   ],
+   ```
+
+For detailed PDO factories, Symfony Doctrine configurations, and connection pool keepalive tuning, see [docs/remote_application_connection_guide.md](docs/remote_application_connection_guide.md).
+
+---
+
+## 3. Core Engineering Highlights
 
 ### A. Dedicated Remote Architecture & Principle of Least Privilege (PoLP)
 - **Isolated Service Accounts**: The PHP application never connects as `root`. Roles are segmented with explicit connection limits and host restrictions:
@@ -86,7 +122,7 @@ flowchart TD
 
 ---
 
-## 3. Entity-Relationship Diagram (ERD)
+## 4. Entity-Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
@@ -134,7 +170,7 @@ erDiagram
 
 ---
 
-## 4. Repository Structure
+## 5. Repository Structure
 
 ```plaintext
 sanaraecomercedb/
@@ -182,6 +218,7 @@ sanaraecomercedb/
 |   |-- rotate_partitions.sh                 Annual partition maintenance automation
 |   `-- run_benchmarks.sh                    Query benchmark and performance profiler
 `-- docs/
+    |-- remote_application_connection_guide.md Standalone DB to PHP integration runbook (Laravel, PDO, TLS)
     |-- architecture_topology.md             Network segmentation and dedicated host topology
     |-- database_schema_erd.md               Complete schema data dictionary and entity catalog
     |-- mysql_performance_tuning.md          Kernel sysctl, InnoDB buffer pool, and benchmark proof
@@ -192,7 +229,7 @@ sanaraecomercedb/
 
 ---
 
-## 5. Quickstart & Deployment Guide (Ubuntu Server)
+## 6. Quickstart & Deployment Guide (Ubuntu Server)
 
 ### A. One-Command Master Deployment
 Execute the single-enter deployment bundle as root:
@@ -234,7 +271,7 @@ Dynamically carves out the upcoming year partition from `p_future`.
 
 ---
 
-## 6. Performance Benchmarks & EXPLAIN Proofs
+## 7. Performance Benchmarks & EXPLAIN Proofs
 
 ### A. Partition Pruning Proof
 ```sql
