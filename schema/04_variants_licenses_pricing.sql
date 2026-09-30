@@ -39,7 +39,7 @@ CREATE TABLE `product_variants` (
     `software_id` SMALLINT UNSIGNED NULL,
     `name` VARCHAR(150) NOT NULL,
     `sku` VARCHAR(100) NOT NULL,
-    `file_format` ENUM('ai', 'psd', 'fig', 'eps', 'blend', 'c4d', 'indd', 'pdf', 'svg', 'zip') NOT NULL,
+    `file_format` ENUM('ai', 'psd', 'fig', 'eps', 'blend', 'c4d', 'indd', 'pdf', 'svg', 'zip', 'cdr') NOT NULL,
     `file_size_bytes` BIGINT UNSIGNED NOT NULL,
     `archive_checksum_sha256` CHAR(64) NOT NULL,
     `storage_s3_key` VARCHAR(300) NOT NULL,
