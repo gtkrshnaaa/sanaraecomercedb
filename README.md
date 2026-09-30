@@ -71,6 +71,11 @@ flowchart TD
 > 
 > **[Read the Automated Verification & Benchmark Test Report](docs/automated_verification_and_test_report.md)**
 
+> [!TIP]
+> **SQL & DBMS Engineering Master Handbook Series**: For an exhaustive, 7-volume technical guide covering relational calculus, advanced DML, native MySQL CLI flags, indexing B-trees, transactions/MVCC, stored routines, and replication/PITR:
+> 
+> **[Explore the Complete 7-Volume SQLBooks Curriculum](docs/sqlbooks/README.md)**
+
 ### Integration Quick Reference:
 1. **Network Authorization**: MySQL binds to `0.0.0.0` or `10.0.2.10` with `skip-name-resolve = 1`. Linux UFW permits inbound TCP port 3306 strictly from the application subnet `10.0.1.0/24`.
 2. **TLS 1.3 Handshake**: Encrypted transport is enforced. The database Root CA (`/etc/mysql/ssl/ca.pem`) is distributed to application servers at `/etc/ssl/certs/sanara/sanara-db-ca.pem`.
@@ -266,6 +271,15 @@ sanaraecomercedb/
 |   |-- rotate_partitions.sh                 Annual partition maintenance automation
 |   `-- run_benchmarks.sh                    Query benchmark and performance profiler
 `-- docs/
+    |-- sqlbooks/                            7-Volume Comprehensive SQL & DBMS Engineering Handbook
+    |   |-- README.md                        Curriculum syllabus and pedagogical structure
+    |   |-- 01_foundations_relational_calculus.md Relational calculus, normal forms (1NF-BCNF), types
+    |   |-- 02_advanced_dml_and_query_mastery.md Execution order, window functions, recursive CTEs
+    |   |-- 03_mysql_cli_client_mastery.md   Client flags, login-path, pagers, session recording, batch
+    |   |-- 04_indexing_execution_plans_and_optimization.md InnoDB 16KB pages, B+Tree, EXPLAIN ANALYZE
+    |   |-- 05_transactions_concurrency_and_locking.md ACID, WAL redo logs, MVCC undo chains, deadlocks
+    |   |-- 06_programmable_sql_routines_and_triggers.md Procedures, functions, triggers, error handlers
+    |   `-- 07_administration_replication_and_disaster_recovery.md Partitioning, RBAC, GTID, PITR
     |-- automated_verification_and_test_report.md Complete test execution transcript and live benchmark metrics
     |-- cli_database_management_mastery_guide.md Comprehensive MySQL client CLI administration master runbook
     |-- remote_application_connection_guide.md Standalone DB to PHP integration runbook (Laravel, PDO, TLS)
@@ -355,3 +369,19 @@ Natural language search resolves in **0.0220 milliseconds**.
 
 For the exhaustive automated test transcript, invariant financial audits, and partition distribution proofs, see:
 **[Read the Automated Verification & Benchmark Test Report](docs/automated_verification_and_test_report.md)**
+
+---
+
+## 8. SQL & Database Engineering Mastery Handbook (SQLBooks)
+
+Located in [`docs/sqlbooks/`](docs/sqlbooks/README.md), this 7-volume engineering handbook provides a rigorous, production-grade guide to relational theory, modern SQL, MySQL client terminal operations, InnoDB storage engine internals, and high-availability operations:
+
+| Volume | Title | Core Engineering Coverage |
+| :--- | :--- | :--- |
+| **[Volume 1](docs/sqlbooks/01_foundations_relational_calculus.md)** | Foundations of Relational Calculus, Schema Design, and MySQL Data Types | Relational algebra, normal forms (1NF to BCNF), integer/decimal precision, temporal types, UTF-8 collations, declarative constraints. |
+| **[Volume 2](docs/sqlbooks/02_advanced_dml_and_query_mastery.md)** | Advanced DML, Analytical SQL, and Complex Query Mastery | Logical query execution pipeline (FROM to LIMIT), window functions, running aggregates, recursive CTEs, `JSON_TABLE` relational shredding. |
+| **[Volume 3](docs/sqlbooks/03_mysql_cli_client_mastery.md)** | Native MySQL CLI Client Mastery and Terminal Operations | Client flags (`--safe-updates`, `--compress`), `.mylogin.cnf` credential storage, pager utilities (`less -SFX`), `tee` session recording, batch execution. |
+| **[Volume 4](docs/sqlbooks/04_indexing_execution_plans_and_optimization.md)** | Indexing Architecture, Execution Plans, and Query Optimization | InnoDB 16KB pages, clustered vs secondary B+trees, leftmost prefix rule, Full-Text Search, generated columns, and `EXPLAIN ANALYZE` cost tree parsing. |
+| **[Volume 5](docs/sqlbooks/05_transactions_concurrency_and_locking.md)** | Transactions, Concurrency Control, and InnoDB Locking Engine | ACID architecture, WAL redo logs, MVCC rollback segments, ANSI isolation levels, row/gap/next-key locks, deadlocks and engine status diagnosis. |
+| **[Volume 6](docs/sqlbooks/06_programmable_sql_routines_and_triggers.md)** | Programmable SQL Routines, Triggers, and Error Handling | Delimiter reassignment, stored procedures vs functions, determinism, cursor lifecycle, `SIGNAL SQLSTATE`, `DECLARE HANDLER`, reactive triggers, definer security. |
+| **[Volume 7](docs/sqlbooks/07_administration_replication_and_disaster_recovery.md)** | Administration, Replication, and Disaster Recovery | Horizontal range/list partitioning, partition pruning, `OPTIMIZE`/`ANALYZE TABLE`, RBAC roles, dual passwords, GTID replication, and Point-In-Time Recovery. |
