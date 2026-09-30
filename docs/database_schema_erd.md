@@ -1,6 +1,6 @@
 # Sanara E-Commerce Database Schema & ERD
 
-## 1. Entity-Relationship Diagram (ERD)
+## 1. Complete Entity-Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
@@ -11,15 +11,19 @@ erDiagram
     users ||--o{ orders : "places"
     users ||--o{ customer_entitlements : "holds"
     users ||--o{ product_reviews : "authors"
+    users ||--o{ order_refund_requests : "files"
 
     creator_profiles ||--o{ creator_social_links : "publishes"
     creator_profiles ||--o{ products : "authors"
     creator_profiles ||--o| creator_wallets : "possesses"
     creator_profiles ||--o{ payout_requests : "submits"
+    creator_profiles ||--o{ product_collaborators : "contributes"
+    creator_profiles ||--o{ collections : "curates"
     creator_wallets ||--o{ wallet_ledger_entries : "records"
 
     categories ||--o{ categories : "sub_categorizes"
     categories ||--o{ products : "classifies"
+    categories ||--o{ contract_asset_allocations : "cleared_in"
     software_ecosystems ||--o{ product_variants : "supports"
 
     products ||--o{ product_variants : "delivers"
@@ -29,6 +33,16 @@ erDiagram
     tags ||--o{ product_tag_relations : "categorizes"
     products ||--o{ product_quality_reviews : "inspected_by"
     products ||--o{ product_reviews : "receives"
+    products ||--o{ product_print_profiles : "specifies"
+    products ||--o{ spot_color_plates : "separates"
+    products ||--o{ product_collaborators : "split_among"
+    products ||--o{ collection_items : "featured_in"
+
+    print_production_profiles ||--o{ product_print_profiles : "standardizes"
+    collections ||--o{ collection_items : "bundles"
+
+    agency_teams ||--o{ enterprise_contracts : "negotiates"
+    enterprise_contracts ||--o{ contract_asset_allocations : "allocates"
 
     licenses ||--o{ product_pricing_matrix : "scales"
     licenses ||--o{ order_items : "governs"
@@ -39,9 +53,13 @@ erDiagram
     orders ||--o{ payment_transactions : "audits"
 
     order_items ||--|| customer_entitlements : "grants"
+    order_items ||--o{ order_refund_requests : "disputed_in"
     customer_entitlements ||--o{ secure_download_tokens : "authorizes"
     customer_entitlements ||--o{ download_logs : "tracks"
     secure_download_tokens ||--o{ download_logs : "consumes"
+
+    product_variants ||--o{ variant_storage_locations : "replicated_across"
+    storage_vault_nodes ||--o{ variant_storage_locations : "hosts"
 
     product_reviews ||--o{ review_helpful_votes : "upvoted_by"
 ```
@@ -67,7 +85,7 @@ Design studios, freelance illustrators, and large-format print specialists.
 - `id` (BIGINT UNSIGNED, PK): Studio identifier.
 - `user_id` (BIGINT UNSIGNED, FK): References `users(id)`.
 - `studio_name` (VARCHAR(150)): Public brand name.
-- `commission_rate` (DECIMAL(5,2)): Retained percentage (e.g., 82.00% to creator, 18.00% to platform).
+- `commission_rate` (DECIMAL(5,2)): Retained percentage (e.g. 82.00% to creator, 18.00% to platform).
 - `is_verified_creator` (TINYINT(1)): Vetting status by Sanara curation board.
 - `total_revenue_usd` (DECIMAL(14,2)): Lifetime earned royalties.
 
@@ -146,3 +164,42 @@ Double-entry accounting ledger tracking:
 
 #### `product_quality_reviews`
 Technical pre-flight check records conducted by Sanara Art Directors verifying DPI, color profiles, bleed tolerances, and font outlines prior to publication.
+
+---
+
+### Domain 6: Pre-Press Print Profiles & Creative Collaborations
+
+#### `print_production_profiles`
+Industrial print proofing standards specifying substrate properties, Total Area Coverage (TAC), and screening frequencies:
+- `profile_name`: E.g. ISO 12647-2 FOGRA39, GRACoL 2013, Heavy Vinyl 510gsm High-UV.
+- `substrate_type`: Substrate classification (`vinyl_frontlit_510gsm`, `art_carton_310gsm`, `corrugated_b_flute`).
+- `max_ink_density_tac`: Maximum Total Area Coverage ink limit (260% to 320%).
+
+#### `product_print_profiles`
+Pivot mapping products to standardized print profiles with exact minimum bleed and safety margin requirements.
+
+#### `spot_color_plates`
+Independent ink channels for Pantone Matching System (PMS) inks, metallic foil dies, selective UV varnishes, and structural CAD cutlines.
+
+#### `product_collaborators`
+Multi-party royalty split registry enabling lead studios to distribute royalties among contributing specialists (e.g. 3D modeler, typographer, colorist).
+
+---
+
+### Domain 7: Curated Campaign Bundles & Enterprise B2B Contracts
+
+#### `collections` & `collection_items`
+Editorial and creator-curated campaign packs combining multiple assets (e.g. Unipole Billboard + Vinyl Spanduk + Rollup Display) with package discounts.
+
+#### `enterprise_contracts` & `contract_asset_allocations`
+Master Service Agreements (MSA) for global ad agencies (Ogilvy, Dentsu) with tiered annual guarantees, custom royalty discounts, licensed seats, and category download quotas.
+
+---
+
+### Domain 8: Multi-Cloud Object Storage & Refund Disputes
+
+#### `storage_vault_nodes` & `variant_storage_locations`
+Multi-cloud replication registry tracking asset files across AWS S3 primary storage, Cloudflare R2 edge locations, and Wasabi backup archives with health and latency metrics.
+
+#### `order_refund_requests`
+Granular line-item dispute and refund arbitration workflows integrated with double-entry accounting chargeback reversals.
