@@ -1,17 +1,22 @@
 -- ==============================================================================
 -- Sanara E-Commerce Database Architecture
--- Seed 04: Orders, Entitlements, Ephemeral Tokens & Partitioned Telemetry Logs
+-- Seed 04: Orders, Bundles, Contracts, Entitlements, Tokens & Refund Disputes
 -- ==============================================================================
 
 USE `sanara_ecommerce`;
 
 SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `order_refund_requests`;
+TRUNCATE TABLE `coupon_redemption_history`;
 TRUNCATE TABLE `download_logs`;
 TRUNCATE TABLE `secure_download_tokens`;
 TRUNCATE TABLE `customer_entitlements`;
-TRUNCATE TABLE `payment_transactions`;
 TRUNCATE TABLE `order_items`;
 TRUNCATE TABLE `orders`;
+TRUNCATE TABLE `contract_asset_allocations`;
+TRUNCATE TABLE `enterprise_contracts`;
+TRUNCATE TABLE `collection_items`;
+TRUNCATE TABLE `collections`;
 TRUNCATE TABLE `coupons`;
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -20,7 +25,56 @@ INSERT INTO `coupons` (`id`, `code`, `discount_type`, `discount_value`, `min_ord
 (1, 'DESIGNFEST20', 'percentage', 20.00, 50.00, 100.00, 500, 42, '2025-01-01 00:00:00', '2026-12-31 23:59:59', 1),
 (2, 'OUTDOOR50OFF', 'fixed_amount', 50.00, 200.00, 50.00, 100, 15, '2025-01-01 00:00:00', '2026-12-31 23:59:59', 1);
 
--- 2. Orders (Partitioned across 2025 and 2026)
+-- 2. Curated Campaign Bundles & Collections
+INSERT INTO `collections` (
+    `id`, `uuid`, `curator_creator_id`, `title`, `slug`, `campaign_theme`,
+    `description`, `bundle_discount_rate`, `is_featured`, `is_active`
+) VALUES
+(
+    1, UUID(), 1,
+    'Mega Transit & Highway Outdoor Takeover Suite',
+    'mega-transit-highway-outdoor-takeover-suite',
+    'outdoor_transit_takeover',
+    'Complete outdoor advertising domination pack uniting large-format highway unipole billboards (14x4m), commercial street vinyl banners (spanduk), and portable exhibition roll-up displays.',
+    25.00, 1, 1
+),
+(
+    2, UUID(), 3,
+    'Swiss Grid Exhibition & Packaging Identity Masterpack',
+    'swiss-grid-exhibition-packaging-masterpack',
+    'fmcg_packaging_suite',
+    'Rigorous modernist branding system combining ISO A1 exhibition posters, commercial folding carton packaging die-lines, and cross-platform Figma design token libraries.',
+    20.00, 1, 1
+);
+
+-- 3. Collection Items Mapping
+INSERT INTO `collection_items` (`collection_id`, `product_id`, `display_order`, `is_hero_asset`) VALUES
+(1, 1, 1, 1),
+(1, 2, 2, 0),
+(1, 8, 3, 0),
+(2, 3, 1, 1),
+(2, 5, 2, 0),
+(2, 7, 3, 0);
+
+-- 4. Enterprise Agency Master Service Agreements (B2B Contracts)
+INSERT INTO `enterprise_contracts` (
+    `id`, `uuid`, `agency_team_id`, `contract_number`, `tier`,
+    `monthly_flat_fee_usd`, `annual_minimum_guarantee_usd`, `per_asset_royalty_discount_pct`,
+    `max_seats_licensed`, `active_from`, `active_until`, `status`
+) VALUES
+(1, UUID(), 1, 'MSA-2025-OGILVY-APAC', 'platinum_conglomerate', 3500.00, 42000.00, 20.00, 25, '2025-01-01', '2026-12-31', 'active'),
+(2, UUID(), 2, 'MSA-2025-DENTSU-GLOBAL', 'gold_network', 2200.00, 26400.00, 15.00, 15, '2025-02-01', '2026-01-31', 'active');
+
+-- 5. Contract Asset Category Allocations & Quotas
+INSERT INTO `contract_asset_allocations` (
+    `contract_id`, `category_id`, `is_unlimited_cleared`, `monthly_download_quota`, `current_cycle_consumed`
+) VALUES
+(1, 2, 1, 500, 84),
+(1, 3, 1, 500, 42),
+(2, 4, 0, 150, 67),
+(2, 6, 0, 100, 38);
+
+-- 6. Orders (Partitioned across 2025 and 2026)
 INSERT INTO `orders` (
     `id`, `uuid`, `order_number`, `buyer_id`, `agency_team_id`, `currency`,
     `subtotal_amount`, `discount_amount`, `tax_amount`, `total_amount`,
@@ -38,7 +92,7 @@ INSERT INTO `orders` (
 -- Order 4: 2026 Purchase by Reza (OmniGlyph Icon Pack + Packaging Box)
 (4, UUID(), 'ORD-2026-RZ04', 9, NULL, 'USD', 94.00, 0.00, 0.00, 94.00, NULL, 'completed', 'midtrans', 'MID-TRX-882194', '2026-03-05 11:32:00', '2026-03-05 11:30:00');
 
--- 3. Order Items & Line-Item Royalties
+-- 7. Order Items & Line-Item Royalties
 INSERT INTO `order_items` (
     `id`, `order_id`, `order_created_at`, `product_id`, `variant_id`, `license_id`, `creator_id`,
     `unit_price`, `creator_royalty_percentage`, `creator_royalty_amount`, `platform_fee_amount`,
@@ -59,7 +113,14 @@ INSERT INTO `order_items` (
 (6, 4, '2026-03-05 11:30:00', 6, 8, 1, 5, 45.00, 80.00, 36.00, 9.00, 'SANARA-55AA-3322-C777-006F', 'active', '2026-03-05 11:32:00'),
 (7, 4, '2026-03-05 11:30:00', 7, 10, 1, 3, 49.00, 85.00, 41.65, 7.35, 'SANARA-88EE-2211-D999-007G', 'active', '2026-03-05 11:32:00');
 
--- 4. Customer Digital Asset Entitlements
+-- 8. Coupon Redemption History Records
+INSERT INTO `coupon_redemption_history` (
+    `coupon_id`, `user_id`, `order_id`, `discount_captured_usd`, `redeemed_at`
+) VALUES
+(1, 11, 3, 71.80, '2026-02-10 16:45:00'),
+(2, 10, 2, 50.00, '2025-09-20 09:12:00');
+
+-- 9. Customer Digital Asset Entitlements
 INSERT INTO `customer_entitlements` (
     `id`, `uuid`, `buyer_id`, `agency_team_id`, `product_id`, `variant_id`, `license_id`, `order_item_id`,
     `license_grant_key`, `entitlement_status`, `granted_at`
@@ -72,7 +133,7 @@ INSERT INTO `customer_entitlements` (
 (6, UUID(), 9, NULL, 6, 8, 1, 6, 'SANARA-55AA-3322-C777-006F', 'active', '2026-03-05 11:32:00'),
 (7, UUID(), 9, NULL, 7, 10, 1, 7, 'SANARA-88EE-2211-D999-007G', 'active', '2026-03-05 11:32:00');
 
--- 5. Secure Ephemeral Download Tokens
+-- 10. Secure Ephemeral Download Tokens
 INSERT INTO `secure_download_tokens` (
     `id`, `token_hash`, `entitlement_id`, `variant_id`, `requested_by_user_id`,
     `bound_ip_address`, `max_allowed_downloads`, `download_count`, `is_revoked`, `expires_at`, `created_at`
@@ -82,7 +143,7 @@ INSERT INTO `secure_download_tokens` (
 (3, SHA2('token_raw_dentsu_2026_03', 256), 4, 4, 11, '203.0.113.88', 5, 1, 0, '2026-02-11 16:45:00', '2026-02-10 16:45:00'),
 (4, SHA2('token_raw_reza_2026_04', 256), 6, 8, 9, '103.28.12.44', 5, 1, 0, '2026-12-31 23:59:59', '2026-03-05 11:35:00');
 
--- 6. Partitioned Download Telemetry Logs
+-- 11. Partitioned Download Telemetry Logs
 INSERT INTO `download_logs` (
     `id`, `download_token_id`, `entitlement_id`, `variant_id`, `user_id`,
     `client_ip`, `country_iso`, `user_agent`, `bytes_delivered`, `http_status_code`,
@@ -96,3 +157,14 @@ INSERT INTO `download_logs` (
 (3, 3, 4, 4, 11, '203.0.113.88', 'JP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_2)', 125829120, 200, 4200, 'completed', '2026-02-10 17:00:00'),
 (4, 4, 6, 8, 9, '103.28.12.44', 'ID', 'Mozilla/5.0 (X11; Linux x86_64)', 146800640, 200, 5100, 'completed', '2026-03-05 11:40:00'),
 (5, NULL, 6, 8, 9, '103.28.12.44', 'ID', 'curl/8.5.0', 0, 403, 50, 'expired_token', '2026-03-06 08:00:00');
+
+-- 12. Order Item Refund Requests & Clawback Disputes
+INSERT INTO `order_refund_requests` (
+    `id`, `uuid`, `order_item_id`, `buyer_id`, `reason_code`,
+    `customer_explanation`, `status`, `approved_by_admin_id`, `refund_amount`, `submitted_at`, `resolved_at`
+) VALUES
+(
+    1, UUID(), 7, 9, 'accidental_duplicate_purchase',
+    'Purchased single item instead of full Swiss bundle, requesting refund to re-order bundle.',
+    'approved_refunded', 1, 49.00, '2026-03-06 10:00:00', '2026-03-06 14:00:00'
+);
